@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<title>WebBattBench</title>
+
+<head>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+</head>
+
+<body>
+    <H2 id="status">加载中...</H2>
+    <H3 id="batt">电池信息获取中...</H3>
+    <H6>线程数</H6>
+    <input role="textbox" tabindex="0" id="thread" placeholder="线程数" value="8">
+    <H6>计分电量</H6>
+    <input role="textbox" tabindex="0" id="startlevel" placeholder="计分电量" value="95">
+    <H6>终止电量</H6>
+    <input role="textbox" tabindex="0" id="stoplevel" placeholder="终止电量" value="5">
+    <button id="start">开始测试</button>
+    <p>使用说明：本工具使用有效算力作为续航对比基准，可跨平台。电量达到计分电量后得分才会开始统计，到达终止电量后得分将锁定。推荐把线程数设定为物理核心数量。为避免基础功耗对结果的偏差，建议降低屏幕亮度。</p>
+    <script>
+        let sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+        let battLevel = 0;
+        document.getElementById("status").innerText = "准备中...";
+        (async () => {
+            for (; true;) {
+                let battInfo = await navigator.getBattery();
+                battLevel = battInfo.level * 100;
+                if (battInfo.charging) {
+                    document.getElementById("batt").innerText = "正在充电:" + battInfo.level * 100 + "%";;
+                }
+                else {
+                    document.getElementById("batt").innerText = "放电中: " + battInfo.level * 100 + "%";
+                }
+                await sleep(1000);
+            }
+        })();
+        let mark = 0;
+        document.getElementById("start").addEventListener("click", function () {
+            let thread = document.getElementById("thread").value;
+            document.getElementById("status").innerText = "开始" + thread + "线程测试...";
+            let startlevel = document.getElementById("startlevel").value;
+            let stoplevel = document.getElementById("stoplevel").value;
+            for (let i = 1; i <= thread; i++) {
+                let newThread = new Worker("./worker.js");
+                newThread.addEventListener("message", function (e) {
+                    console.log("Got Value " + e.data);
+                    if (battLevel > stoplevel && battLevel <= startlevel) {
+                        mark += Number(e.data);
+                    }
+                    document.getElementById("status").innerText = "线程" + i + "返回结果，当前总分" + mark;
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
