@@ -16,7 +16,7 @@
     <H6>终止电量</H6>
     <input role="textbox" tabindex="0" id="stoplevel" placeholder="终止电量" value="5">
     <button id="start">开始测试</button>
-    <p>使用说明：本工具使用有效算力作为续航对比基准，可跨平台。电量达到计分电量后得分才会开始统计，到达终止电量后得分将锁定。推荐把线程数设定为物理核心数量。为避免基础功耗对结果的偏差，建议降低屏幕亮度。</p>
+    <p>使用说明：本工具使用有效算力作为续航对比基准，可跨平台。电量达到计分电量后得分才会开始统计，到达终止电量后得分将锁定。推荐把线程数设定为物理核心数量。为避免基础功耗对结果的偏差，建议降低屏幕亮度。不同浏览器可能对结果产生一定影响，推荐使用同一版本浏览器对比，如统一使用Chrome或Firefox同版本，特别注意iOS上的Chrome实际使用Safari引擎不可与其他平台Chrome对比。</p>
     <script>
         let sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
         let battLevel = 0;
